@@ -1,0 +1,309 @@
+@import url("https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,400&family=Geist+Mono:wght@400;500&family=Geist:wght@300;400;500&display=swap");
+
+:root {
+  --bg: #111110;
+  --surface: #1a1a18;
+  --surface2: #222220;
+  --surface3: #2a2a27;
+  --border: #2e2e2b;
+  --border-strong: #3e3e3a;
+  --text: #e8e6e1;
+  --text-2: #a8a49c;
+  --muted: #5c5a55;
+  --accent: #4f8ef7;
+  --accent-hover: #6ba3f9;
+  --accent-subtle: rgba(79,142,247,0.1);
+  --danger: #f87171;
+  --danger-subtle: rgba(248,113,113,0.1);
+  --success: #4ade80;
+  --success-subtle: rgba(74,222,128,0.1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Geist", sans-serif;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body { min-height: 100vh; }
+a { color: inherit; text-decoration: none; }
+
+.container { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+
+/* ── Header ── */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: 22px 0;
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(12px);
+  background: rgba(17,17,16,0.92);
+}
+
+.site-header__inner {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 20px;
+}
+
+.site-logo {
+  font-family: "Lora", serif;
+  font-size: 1.2rem; font-weight: 600;
+  letter-spacing: -0.01em;
+  display: flex; align-items: center; gap: 7px;
+  color: var(--text);
+}
+
+.site-logo-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: inline-block;
+}
+
+.header-nav { display: flex; align-items: center; gap: 2px; }
+
+.nav-link {
+  font-size: 0.8rem; font-weight: 500;
+  color: var(--muted);
+  padding: 6px 10px; border-radius: 6px;
+  transition: color 0.12s, background 0.12s;
+}
+.nav-link:hover { color: var(--text); background: var(--surface2); }
+.nav-link.active { color: var(--text); background: var(--surface2); }
+
+/* ── Search row ── */
+.search-row {
+  display: flex; gap: 8px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-form {
+  display: flex; flex: 1;
+  border: 1px solid var(--border); border-radius: 8px;
+  overflow: hidden; background: var(--surface);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.search-form:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,142,247,0.12);
+}
+.search-form input {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: var(--text); font-family: "Geist", sans-serif;
+  font-size: 0.875rem; padding: 9px 14px;
+}
+.search-form input::placeholder { color: var(--muted); }
+.search-form button {
+  background: transparent; border: none;
+  border-left: 1px solid var(--border);
+  color: var(--text-2); font-family: "Geist", sans-serif;
+  font-size: 0.8rem; font-weight: 500; padding: 9px 14px;
+  cursor: pointer; transition: background 0.12s, color 0.12s;
+}
+.search-form button:hover { background: var(--surface2); color: var(--text); }
+
+.date-form {
+  display: flex;
+  border: 1px solid var(--border); border-radius: 8px;
+  overflow: hidden; background: var(--surface);
+  transition: border-color 0.15s;
+}
+.date-form:focus-within { border-color: var(--accent); }
+.date-form input[type="date"] {
+  background: transparent; border: none; outline: none;
+  color: var(--text); font-family: "Geist Mono", monospace;
+  font-size: 0.8rem; padding: 9px 12px; color-scheme: dark;
+}
+.date-form button {
+  background: transparent; border: none;
+  border-left: 1px solid var(--border);
+  color: var(--text-2); font-family: "Geist", sans-serif;
+  font-size: 0.8rem; font-weight: 500; padding: 9px 12px;
+  cursor: pointer; white-space: nowrap; transition: background 0.12s;
+}
+.date-form button:hover { background: var(--surface2); }
+
+/* ── Article list ── */
+.article-list { display: flex; flex-direction: column; }
+
+.article-card {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; gap: 16px;
+  padding: 18px 0; border-bottom: 1px solid var(--border);
+  text-decoration: none; color: inherit; cursor: pointer;
+  transition: background 0.1s;
+}
+.article-card:first-child { border-top: 1px solid var(--border); }
+.article-card:hover { background: var(--surface2); margin: 0 -12px; padding-left: 12px; padding-right: 12px; border-radius: 6px; border-bottom-color: transparent; }
+.article-card:hover .article-title { color: var(--accent); }
+
+.article-source-tag {
+  font-family: "Geist Mono", monospace; font-size: 0.67rem; font-weight: 500;
+  color: var(--accent); background: var(--accent-subtle);
+  padding: 2px 7px; border-radius: 4px; margin-bottom: 6px;
+  display: inline-block;
+}
+
+.article-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+.article-date { font-family: "Geist Mono", monospace; font-size: 0.68rem; color: var(--muted); }
+
+.article-title {
+  font-family: "Lora", serif; font-size: 0.975rem; font-weight: 500;
+  line-height: 1.45; margin-bottom: 6px;
+  transition: color 0.12s; color: var(--text);
+}
+
+.article-summary {
+  font-size: 0.8rem; color: var(--muted); line-height: 1.65;
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.article-right {
+  display: flex; flex-direction: column;
+  align-items: flex-end; gap: 5px;
+  flex-shrink: 0; padding-top: 2px;
+}
+
+.article-duration {
+  font-family: "Geist Mono", monospace; font-size: 0.7rem;
+  color: var(--muted); white-space: nowrap;
+}
+
+.article-play-hint {
+  font-family: "Geist Mono", monospace; font-size: 0.65rem;
+  color: var(--accent); opacity: 0.7; white-space: nowrap;
+}
+
+/* ── Pagination ── */
+.pagination {
+  display: flex; align-items: center; justify-content: center;
+  gap: 2px; padding: 44px 0 60px;
+}
+.pagination a, .pagination span {
+  font-family: "Geist Mono", monospace; font-size: 0.75rem;
+  padding: 7px 11px; border-radius: 6px; color: var(--text-2);
+  text-decoration: none; transition: background 0.12s;
+}
+.pagination a:hover { background: var(--surface2); color: var(--text); }
+.pagination .current { background: var(--surface3); color: var(--text); border: 1px solid var(--border-strong); }
+
+/* ── Feeds page ── */
+.page-header {
+  padding: 36px 0 28px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+.page-title {
+  font-family: "Lora", serif; font-size: 1.5rem;
+  font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px;
+}
+.page-subtitle { font-size: 0.82rem; color: var(--muted); }
+
+.add-feed-form { display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+.add-feed-form input {
+  flex: 1; min-width: 160px;
+  border: 1px solid var(--border); border-radius: 8px;
+  background: var(--surface); color: var(--text);
+  font-family: "Geist", sans-serif; font-size: 0.875rem;
+  padding: 9px 14px; outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.add-feed-form input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,142,247,0.12);
+}
+.add-feed-form input::placeholder { color: var(--muted); }
+
+.btn {
+  font-family: "Geist", sans-serif; font-size: 0.8rem; font-weight: 500;
+  padding: 9px 16px; border-radius: 8px; border: none;
+  cursor: pointer; transition: background 0.12s, opacity 0.12s;
+  white-space: nowrap;
+}
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-primary {
+  background: var(--accent); color: #fff;
+}
+.btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+.btn-danger-ghost {
+  background: transparent; color: var(--muted);
+  border: 1px solid var(--border); padding: 5px 10px; font-size: 0.75rem;
+}
+.btn-danger-ghost:hover {
+  background: var(--danger-subtle);
+  color: var(--danger); border-color: var(--danger);
+}
+
+.feed-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.feed-table thead th {
+  font-family: "Geist Mono", monospace; font-size: 0.65rem; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+  text-align: left; padding: 0 12px 10px 0; border-bottom: 1px solid var(--border);
+}
+.feed-table thead th:last-child { text-align: right; padding-right: 0; }
+.feed-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+.feed-table tbody tr:hover { background: var(--surface2); }
+.feed-table td { padding: 12px 12px 12px 0; vertical-align: middle; }
+.feed-table td:last-child { text-align: right; padding-right: 0; }
+.feed-name { font-weight: 500; color: var(--text); }
+.feed-url {
+  font-family: "Geist Mono", monospace; font-size: 0.7rem; color: var(--muted);
+  max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  display: block;
+}
+.feed-url:hover { color: var(--text-2); }
+
+.alert { font-size: 0.8rem; padding: 10px 14px; border-radius: 8px; margin-bottom: 20px; }
+.alert-success { background: var(--success-subtle); color: var(--success); border: 1px solid rgba(74,222,128,0.2); }
+.alert-error { background: var(--danger-subtle); color: var(--danger); border: 1px solid rgba(248,113,113,0.2); }
+
+/* ── Results ── */
+.results-header { padding: 28px 0 0; margin-bottom: 24px; }
+.results-label {
+  font-family: "Geist Mono", monospace; font-size: 0.68rem;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--muted); margin-bottom: 6px;
+}
+.results-query {
+  font-family: "Lora", serif; font-style: italic;
+  font-size: 1.5rem; color: var(--text); margin-bottom: 4px;
+}
+.results-count { font-size: 0.8rem; color: var(--muted); }
+
+.back-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.8rem; color: var(--muted);
+  padding: 20px 0 0; transition: color 0.12s;
+}
+.back-link:hover { color: var(--text); }
+
+.empty-state {
+  padding: 72px 0; text-align: center;
+  color: var(--muted); font-size: 0.875rem;
+}
+
+.feed-count {
+  font-family: "Geist Mono", monospace; font-size: 0.68rem;
+  color: var(--muted); padding: 16px 0 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.feed-count::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+@media (max-width: 600px) {
+  .site-header__inner { flex-wrap: wrap; }
+  .search-row { flex-direction: column; }
+  .article-card { flex-direction: column; gap: 8px; }
+  .article-card:hover { margin: 0; padding-left: 0; padding-right: 0; border-radius: 0; border-bottom-color: var(--border); }
+  .feed-url { max-width: 180px; }
+  .add-feed-form { flex-direction: column; }
+}
