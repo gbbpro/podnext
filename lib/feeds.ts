@@ -78,6 +78,12 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, "").trim();
 }
 
+// Truncate summaries before caching — episode descriptions can be huge
+// and Upstash has a 10MB per-key limit. 300 chars is plenty for display.
+function truncateSummary(text: string, max = 300): string {
+  if (text.length <= max) return text;
+  return text.slice(0, max).trimEnd() + "…";
+}
 export async function fetchAllArticles(feeds?: Feed[]): Promise<Article[]> {
   const feedList = feeds ?? (await getFeeds());
 
