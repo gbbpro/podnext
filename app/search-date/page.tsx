@@ -38,7 +38,7 @@ export default async function SearchDatePage({
   }
 const feeds = await getFeeds();
 const feedSig = getArticleCacheKey(feeds);
-const cacheKey = `search_date_${feedSig}_${crypto.createHash("md5").update(query).digest("hex")}`;
+const cacheKey = `search_date_${feedSig}_${crypto.createHash("md5").update(dateStr).digest("hex")}`;
 let results = await cacheGet<Awaited<ReturnType<typeof fetchAllArticles>>>(cacheKey);
 if (!results) {
   const all = await fetchAllArticles(feeds);
