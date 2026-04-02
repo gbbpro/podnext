@@ -1,19 +1,27 @@
 "use client";
 import { useRouter, usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import type { Feed } from "@/lib/feeds";
 
 interface HeaderProps {
-  feeds?: Feed[];
   activeSource?: string;
 }
 
-export default function Header({   activeSource = "" }: HeaderProps) {
+export default function Header({ activeSource = "" }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [query, setQuery] = useState("");
   const [date, setDate] = useState("");
+  const [feeds, setFeeds] = useState<Feed[]>([]);
+
+  // Always fetch fresh feed list from the API on mount and on every navigation
+  useEffect(() => {
+    fetch("/api/feeds", { cache: "no-store" })
+      .then((r) => r.json())
+      .then(setFeeds)
+      .catch(() => {});
+  }, [pathname]); // re-fetch whenever the route changes
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -27,11 +35,7 @@ export default function Header({   activeSource = "" }: HeaderProps) {
 
   function handleSourceChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const val = e.target.value;
-    if (val) {
-      router.push(`/?source=${encodeURIComponent(val)}`);
-    } else {
-      router.push("/");
-    }
+    router.push(val ? `/?source=${encodeURIComponent(val)}` : "/");
   }
 
   return (
