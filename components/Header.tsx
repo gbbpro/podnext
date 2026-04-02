@@ -9,7 +9,7 @@ interface HeaderProps {
   activeSource?: string;
 }
 
-export default function Header({ feeds = [], activeSource = "" }: HeaderProps) {
+export default function Header({   activeSource = "" }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [query, setQuery] = useState("");
