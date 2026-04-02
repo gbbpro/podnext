@@ -1,4 +1,4 @@
-import { fetchAllArticles } from "@/lib/feeds";
+import { fetchAllArticles, getFeeds, getArticleCacheKey } from "@/lib/feeds";
 import { cacheGet, cacheSet } from "@/lib/cache";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
@@ -25,11 +25,12 @@ export default async function SearchPage({
     );
   }
 
-  const cacheKey = "search:" + crypto.createHash("md5").update(query).digest("hex");
-
-  let results = await cacheGet<Awaited<ReturnType<typeof fetchAllArticles>>>(cacheKey);
-  if (!results) {
-    const all = await fetchAllArticles();
+  const feeds = await getFeeds();
+const feedSig = getArticleCacheKey(feeds);
+const cacheKey = `search_${feedSig}_${crypto.createHash("md5").update(query).digest("hex")}`;
+let results = await cacheGet<Awaited<ReturnType<typeof fetchAllArticles>>>(cacheKey);
+if (!results) {
+  const all = await fetchAllArticles(feeds);
     results = all.filter((a) =>
       a.title.toLowerCase().includes(query.toLowerCase())
     );

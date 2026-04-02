@@ -32,31 +32,37 @@ export const DEFAULT_FEEDS: Feed[] = [
 ];
 
 const FEEDS_KEY = "user_feeds";
-const FEEDS_VERSION_KEY = "user_feeds_version";
 
 export async function getFeeds(): Promise<Feed[]> {
   const stored = await cacheGet<Feed[]>(FEEDS_KEY);
   return stored ?? DEFAULT_FEEDS;
 }
 
-// Returns a timestamp string that changes every time feeds are saved.
-// The home page uses this as part of its article cache key so stale
-// articles are never served after a feed add/delete.
-export async function getFeedsVersion(): Promise<string> {
-  const v = await cacheGet<string>(FEEDS_VERSION_KEY);
-  return v ?? "default";
+export async function saveFeeds(feeds: Feed[]): Promise<void> {
+  // Save feeds and clear all article caches atomically
+  await cacheSet(FEEDS_KEY, feeds, 0);
+  await clearAllArticleCaches();
 }
 
-export async function saveFeeds(feeds: Feed[]): Promise<void> {
-  await cacheSet(FEEDS_KEY, feeds, 0);
-  // Bump the version so the article cache key changes
-  await cacheSet(FEEDS_VERSION_KEY, String(Date.now()), 0);
-  // Also delete any existing article cache keys
+// Derive a stable cache key from the feed URLs themselves.
+// If the feed list changes, the key changes automatically — no separate version key needed.
+export function getArticleCacheKey(feeds: Feed[]): string {
+  const sig = feeds.map((f) => f.url).sort().join("|");
+  let hash = 0;
+  for (let i = 0; i < sig.length; i++) {
+    hash = (hash * 31 + sig.charCodeAt(i)) & 0xffffffff;
+  }
+  return `articles_${Math.abs(hash)}`;
+}
+
+export async function clearAllArticleCaches(): Promise<void> {
+  // Delete the legacy keys too in case they exist
   await cacheDelete("all_articles");
+  await cacheDelete("all_articles_vdefault");
 }
 
 export async function bustArticleCache(): Promise<void> {
-  await cacheDelete("all_articles");
+  await clearAllArticleCaches();
 }
 
 const parser = new Parser({

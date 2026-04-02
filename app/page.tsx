@@ -1,4 +1,4 @@
-import { fetchAllArticles, sortByDate, getFeeds, getFeedsVersion } from "@/lib/feeds";
+import { fetchAllArticles, sortByDate, getFeeds, getArticleCacheKey } from "@/lib/feeds";
 import { cacheGet, cacheSet } from "@/lib/cache";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
@@ -16,13 +16,12 @@ export default async function Home({
   const page = Math.max(1, parseInt(searchParams.page ?? "1", 10));
   const activeSource = searchParams.source ?? "";
 
-  // Always read feeds fresh from KV — drives both the dropdown and article fetch
+  // Get the current feed list — this is always fresh from KV
   const feeds = await getFeeds();
 
-  // Cache key includes the feeds version so any add/delete automatically
-  // invalidates the article cache without needing an explicit delete
-  const version = await getFeedsVersion();
-  const cacheKey = `all_articles_v${version}`;
+  // Cache key is derived directly from the feed URLs.
+  // Adding or removing a feed changes the key, so stale articles are never served.
+  const cacheKey = getArticleCacheKey(feeds);
 
   let articles = await cacheGet<ReturnType<typeof sortByDate>>(cacheKey);
   if (!articles) {
