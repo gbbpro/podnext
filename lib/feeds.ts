@@ -32,19 +32,29 @@ export const DEFAULT_FEEDS: Feed[] = [
 ];
 
 const FEEDS_KEY = "user_feeds";
+const FEEDS_VERSION_KEY = "user_feeds_version";
 
-// Always reads directly from KV — no intermediate cache layer.
-// The feeds list is small and must always be fresh.
 export async function getFeeds(): Promise<Feed[]> {
   const stored = await cacheGet<Feed[]>(FEEDS_KEY);
   return stored ?? DEFAULT_FEEDS;
 }
 
-export async function saveFeeds(feeds: Feed[]): Promise<void> {
-  await cacheSet(FEEDS_KEY, feeds, 0); // 0 = no expiry
+// Returns a timestamp string that changes every time feeds are saved.
+// The home page uses this as part of its article cache key so stale
+// articles are never served after a feed add/delete.
+export async function getFeedsVersion(): Promise<string> {
+  const v = await cacheGet<string>(FEEDS_VERSION_KEY);
+  return v ?? "default";
 }
 
-// Call this whenever feeds change so the article cache is rebuilt next request
+export async function saveFeeds(feeds: Feed[]): Promise<void> {
+  await cacheSet(FEEDS_KEY, feeds, 0);
+  // Bump the version so the article cache key changes
+  await cacheSet(FEEDS_VERSION_KEY, String(Date.now()), 0);
+  // Also delete any existing article cache keys
+  await cacheDelete("all_articles");
+}
+
 export async function bustArticleCache(): Promise<void> {
   await cacheDelete("all_articles");
 }
