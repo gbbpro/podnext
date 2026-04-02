@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getFeeds, saveFeeds, Feed } from "@/lib/feeds";
-import { cacheDelete } from "@/lib/cache";
+import { getFeeds, saveFeeds, bustArticleCache, Feed } from "@/lib/feeds";
 
-// GET /api/feeds — list all feeds
+// GET /api/feeds — always fresh, no caching
 export async function GET() {
   const feeds = await getFeeds();
-  return NextResponse.json(feeds);
+  return NextResponse.json(feeds, {
+    headers: { "Cache-Control": "no-store" },
+  });
 }
 
 // POST /api/feeds — add a new feed { name, url }
@@ -18,7 +19,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "name and url are required" }, { status: 400 });
   }
 
-  // Basic URL validation
   try {
     new URL(url);
   } catch {
@@ -33,10 +33,12 @@ export async function POST(req: NextRequest) {
 
   const updated: Feed[] = [...feeds, { name, url }];
   await saveFeeds(updated);
-  // Bust the article cache so the new feed is fetched next time
-  await cacheDelete("all_articles");
+  await bustArticleCache();
 
-  return NextResponse.json(updated, { status: 201 });
+  return NextResponse.json(updated, {
+    status: 201,
+    headers: { "Cache-Control": "no-store" },
+  });
 }
 
 // DELETE /api/feeds — remove a feed by url
@@ -56,7 +58,9 @@ export async function DELETE(req: NextRequest) {
   }
 
   await saveFeeds(updated);
-  await cacheDelete("all_articles");
+  await bustArticleCache();
 
-  return NextResponse.json(updated);
+  return NextResponse.json(updated, {
+    headers: { "Cache-Control": "no-store" },
+  });
 }

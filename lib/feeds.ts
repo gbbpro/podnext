@@ -1,5 +1,5 @@
 import Parser from "rss-parser";
-import { cacheGet, cacheSet } from "./cache";
+import { cacheGet, cacheSet, cacheDelete } from "./cache";
 
 export interface Article {
   source: string;
@@ -17,7 +17,6 @@ export interface Feed {
   url: string;
 }
 
-// Default feeds — used only when none are stored in KV yet
 export const DEFAULT_FEEDS: Feed[] = [
   { name: "PTFO", url: "https://feeds.megaphone.fm/LBE1877691396" },
   { name: "Nothing Personal", url: "https://feeds.megaphone.fm/npds" },
@@ -34,14 +33,20 @@ export const DEFAULT_FEEDS: Feed[] = [
 
 const FEEDS_KEY = "user_feeds";
 
+// Always reads directly from KV — no intermediate cache layer.
+// The feeds list is small and must always be fresh.
 export async function getFeeds(): Promise<Feed[]> {
   const stored = await cacheGet<Feed[]>(FEEDS_KEY);
   return stored ?? DEFAULT_FEEDS;
 }
 
 export async function saveFeeds(feeds: Feed[]): Promise<void> {
-  // Store indefinitely (no TTL) — pass 0 to skip expiry
-  await cacheSet(FEEDS_KEY, feeds, 0);
+  await cacheSet(FEEDS_KEY, feeds, 0); // 0 = no expiry
+}
+
+// Call this whenever feeds change so the article cache is rebuilt next request
+export async function bustArticleCache(): Promise<void> {
+  await cacheDelete("all_articles");
 }
 
 const parser = new Parser({

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 
 interface Feed {
@@ -8,6 +9,7 @@ interface Feed {
 }
 
 export default function FeedsPage() {
+  const router = useRouter();
   const [feeds, setFeeds] = useState<Feed[]>([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
@@ -17,7 +19,7 @@ export default function FeedsPage() {
   const [deletingUrl, setDeletingUrl] = useState<string | null>(null);
 
   async function loadFeeds() {
-    const res = await fetch("/api/feeds");
+    const res = await fetch("/api/feeds", { cache: "no-store" });
     const data = await res.json();
     setFeeds(data);
     setLoading(false);
@@ -49,7 +51,9 @@ export default function FeedsPage() {
         setFeeds(data);
         setName("");
         setUrl("");
-        showMessage("success", "Feed added successfully");
+        showMessage("success", `"${name.trim()}" added — it will appear in the dropdown on the feed page`);
+        // Refresh server components so the dropdown updates immediately if user navigates back
+        router.refresh();
       }
     } catch {
       showMessage("error", "Network error");
@@ -58,20 +62,21 @@ export default function FeedsPage() {
     }
   }
 
-  async function handleDelete(feedUrl: string) {
-    setDeletingUrl(feedUrl);
+  async function handleDelete(feed: Feed) {
+    setDeletingUrl(feed.url);
     try {
       const res = await fetch("/api/feeds", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: feedUrl }),
+        body: JSON.stringify({ url: feed.url }),
       });
       const data = await res.json();
       if (!res.ok) {
-        showMessage("error", data.error ?? "Failed to delete feed");
+        showMessage("error", data.error ?? "Failed to remove feed");
       } else {
         setFeeds(data);
-        showMessage("success", "Feed removed");
+        showMessage("success", `"${feed.name}" removed`);
+        router.refresh();
       }
     } catch {
       showMessage("error", "Network error");
@@ -137,9 +142,7 @@ export default function FeedsPage() {
               <tbody>
                 {feeds.map((feed) => (
                   <tr key={feed.url}>
-                    <td>
-                      <div className="feed-name">{feed.name}</div>
-                    </td>
+                    <td><div className="feed-name">{feed.name}</div></td>
                     <td>
                       <a
                         href={feed.url}
@@ -147,7 +150,6 @@ export default function FeedsPage() {
                         rel="noopener noreferrer"
                         className="feed-url"
                         title={feed.url}
-                        style={{ color: "var(--muted)" }}
                       >
                         {feed.url}
                       </a>
@@ -155,7 +157,7 @@ export default function FeedsPage() {
                     <td>
                       <button
                         className="btn btn-danger-ghost"
-                        onClick={() => handleDelete(feed.url)}
+                        onClick={() => handleDelete(feed)}
                         disabled={deletingUrl === feed.url}
                       >
                         {deletingUrl === feed.url ? "Removing…" : "Remove"}
