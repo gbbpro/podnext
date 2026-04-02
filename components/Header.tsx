@@ -2,8 +2,14 @@
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
+import type { Feed } from "@/lib/feeds";
 
-export default function Header() {
+interface HeaderProps {
+  feeds?: Feed[];
+  activeSource?: string;
+}
+
+export default function Header({ feeds = [], activeSource = "" }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [query, setQuery] = useState("");
@@ -17,6 +23,15 @@ export default function Header() {
   function handleDate(e: React.FormEvent) {
     e.preventDefault();
     if (date) router.push(`/search-date?date=${date}`);
+  }
+
+  function handleSourceChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const val = e.target.value;
+    if (val) {
+      router.push(`/?source=${encodeURIComponent(val)}`);
+    } else {
+      router.push("/");
+    }
   }
 
   return (
@@ -37,6 +52,7 @@ export default function Header() {
           </nav>
         </div>
       </div>
+
       {pathname !== "/feeds" && (
         <div className="container">
           <div className="search-row">
@@ -49,6 +65,22 @@ export default function Header() {
               />
               <button type="submit">Search</button>
             </form>
+
+            {feeds.length > 0 && (
+              <select
+                className={`source-select${activeSource ? " is-filtered" : ""}`}
+                value={activeSource}
+                onChange={handleSourceChange}
+              >
+                <option value="">All podcasts</option>
+                {feeds.map((f) => (
+                  <option key={f.url} value={f.name}>
+                    {f.name}
+                  </option>
+                ))}
+              </select>
+            )}
+
             <form className="date-form" onSubmit={handleDate}>
               <input
                 type="date"
