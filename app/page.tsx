@@ -55,7 +55,7 @@ export default async function Home({
 
   return (
     <>
-      <Header feeds={feeds} activeSource={activeSource} />
+      <Header activeSource={activeSource} />
       <main className="container">
         <div className="article-list">
           {paginated.length === 0 ? (
