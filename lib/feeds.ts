@@ -96,12 +96,12 @@ export async function fetchAllArticles(feeds?: Feed[]): Promise<Article[]> {
         link: item.link ?? "",
         pubDate: item.pubDate ?? "",
         isoDate: item.isoDate ?? item.pubDate ?? "",
-        summary: stripHtml(
+        summary: truncateSummary(stripHtml(
           item.contentSnippet ??
             (item as any).itunesSummary ??
             item.content ??
             ""
-        ),
+        )),
         duration: (item as any).duration,
         enclosure: item.enclosure as { url: string; type: string } | undefined,
       }));
