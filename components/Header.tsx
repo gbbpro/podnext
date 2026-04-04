@@ -44,7 +44,7 @@ export default function Header({ activeSource = "" }: HeaderProps) {
         <div className="site-header__inner">
           <Link href="/" className="site-logo">
             <span className="site-logo-dot" />
-            PodFeed
+           810 Podcasts 
           </Link>
           <nav className="header-nav">
             <Link href="/" className={`nav-link${pathname === "/" ? " active" : ""}`}>

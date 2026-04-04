@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Pod Feed",
-  description: "Your podcast aggregator",
+  title: "810-pod-feed",
+  description: "podcast aggregator",
 };
 
 export default function RootLayout({
